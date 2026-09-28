@@ -1,0 +1,37 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { getRange } from '../src/utils/dates.js';
+import { scoreResult } from '../src/services/scoring.js';
+import { mulberry32, shuffle } from '../src/utils/random.js';
+
+test('rango semanal empieza en lunes', () => {
+  const { from, to } = getRange('weekly', new Date('2026-09-30T10:00:00Z')); // miércoles
+  assert.equal(from.toISOString().slice(0, 10), '2026-09-28');
+  assert.equal(to.toISOString().slice(0, 10), '2026-10-05');
+});
+
+test('rango mensual', () => {
+  const { from, to } = getRange('monthly', new Date('2026-09-28T00:00:00Z'));
+  assert.equal(from.toISOString().slice(0, 10), '2026-09-01');
+  assert.equal(to.toISOString().slice(0, 10), '2026-10-01');
+});
+
+test('puntuación = reps * puntos por ejercicio', () => {
+  const blocks = [{ exerciseSlug: 'squat', sets: 3, workSeconds: 40 }, { exerciseSlug: 'burpee', sets: 3, workSeconds: 40 }];
+  const exercises = [{ slug: 'squat', pointsPerRep: 1 }, { slug: 'burpee', pointsPerRep: 3 }];
+  const { totalScore } = scoreResult(blocks, exercises, { squat: 30, burpee: 10 });
+  assert.equal(totalScore, 60);
+});
+
+test('rechaza ejercicios ajenos y reps imposibles', () => {
+  const blocks = [{ exerciseSlug: 'squat', sets: 1, workSeconds: 10 }];
+  const exercises = [{ slug: 'squat', pointsPerRep: 1 }];
+  assert.throws(() => scoreResult(blocks, exercises, { pushup: 5 }), /no pertenece/);
+  assert.throws(() => scoreResult(blocks, exercises, { squat: 999 }), /no plausibles/);
+});
+
+test('la sesión diaria es determinista por semilla', () => {
+  const a = shuffle([1, 2, 3, 4, 5, 6, 7, 8], mulberry32(20260928));
+  const b = shuffle([1, 2, 3, 4, 5, 6, 7, 8], mulberry32(20260928));
+  assert.deepEqual(a, b);
+});

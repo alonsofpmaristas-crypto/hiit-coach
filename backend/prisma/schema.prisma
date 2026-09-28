@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int             @id @default(autoincrement())
+  name         String
+  email        String          @unique
+  passwordHash String
+  createdAt    DateTime        @default(now())
+  results      SessionResult[]
+}
+
+model Exercise {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique
+  name         String
+  type         String
+  description  String
+  keyJoints    String[] // keypoints de MoveNet usados para detectar el ejercicio
+  pointsPerRep Int      @default(1)
+}
+
+model DailySession {
+  id      Int             @id @default(autoincrement())
+  date    DateTime        @unique @db.Date
+  title   String
+  // [{ exerciseSlug, sets, workSeconds, restSeconds }]
+  blocks  Json
+  results SessionResult[]
+}
+
+model SessionResult {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  dailySessionId Int
+  repsByExercise Json         // { "squat": 34, "burpee": 12 }
+  totalScore     Int
+  completedAt    DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailySession   DailySession @relation(fields: [dailySessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dailySessionId])
+  @@index([dailySessionId])
+}
