@@ -93,7 +93,7 @@ cd hiit-coach
 ### Variables de entorno
 Crear un archivo `.env` en `backend/` a partir de `.env.example`:
 ```env
-DATABASE_URL="postgresql://usuario:password@localhost:5432/hiitcoach"
+DATABASE_URL="postgresql://usuario:password@localhost:5433/hiitcoach"
 JWT_SECRET="cambia_este_valor"
 PORT=4000
 CLIENT_URL="http://localhost:5173"
