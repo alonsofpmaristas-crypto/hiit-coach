@@ -1,0 +1,37 @@
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
+
+const linkClass = ({ isActive }) =>
+  `px-1 pb-1 border-b-2 font-medium ${isActive ? 'border-work' : 'border-transparent text-muted hover:text-ink'}`;
+
+export default function Layout() {
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen">
+      <header className="border-b border-line bg-white">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
+          <span className="font-display text-2xl font-bold tracking-tight">HIIT Coach</span>
+          <nav className="flex items-center gap-5">
+            <NavLink to="/" end className={linkClass}>Sesión de hoy</NavLink>
+            <NavLink to="/rankings" className={linkClass}>Rankings</NavLink>
+          </nav>
+          {user ? (
+            <button
+              className="text-sm text-muted hover:text-ink"
+              onClick={() => { logout(); navigate('/login'); }}
+            >
+              {user.name} · Salir
+            </button>
+          ) : (
+            <NavLink to="/login" className="text-sm font-medium">Entrar</NavLink>
+          )}
+        </div>
+      </header>
+      <main className="mx-auto max-w-3xl px-4 py-8">
+        <Outlet />
+      </main>
+    </div>
+  );
+}

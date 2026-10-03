@@ -1,0 +1,27 @@
+{
+  "name": "hiit-coach-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Sin tests en frontend todavía (Fase 5)\""
+  },
+  "dependencies": {
+    "@fontsource/barlow": "^5.1.0",
+    "@fontsource/barlow-condensed": "^5.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "socket.io-client": "^4.7.5",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "tailwindcss": "^4.0.0",
+    "vite": "^5.4.8"
+  }
+}
