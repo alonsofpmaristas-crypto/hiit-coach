@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import logo from '../../assets/hiit-coach-logo.svg';
 import { api } from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
 
@@ -34,7 +35,8 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="font-display text-5xl font-bold leading-none">
+      <img src={logo} alt="HIIT Coach" className="mx-auto mb-8 h-16 w-auto" />
+      <h1 className="text-center font-display text-5xl font-bold leading-none">
         {mode === 'login' ? 'Entra y suda' : 'Crea tu cuenta'}
       </h1>
       <p className="mt-3 text-muted">Una sesión de HIIT nueva cada día, contada por tu cámara.</p>
