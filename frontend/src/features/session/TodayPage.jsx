@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAsync } from '../../hooks/useAsync';
 import IntervalStrip from './IntervalStrip.jsx';
@@ -5,6 +6,7 @@ import IntervalStrip from './IntervalStrip.jsx';
 const formatMinutes = (s) => `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ''}`;
 
 export default function TodayPage() {
+  const navigate = useNavigate();
   const { data: session, error, loading } = useAsync(() => api('/sessions/today'));
 
   if (loading) return <p className="text-muted">Cargando la sesión de hoy…</p>;
@@ -38,10 +40,13 @@ export default function TodayPage() {
         ))}
       </ul>
 
-      <button disabled className="mt-8 rounded bg-ink px-6 py-3 font-semibold text-white opacity-40">
+      <button
+        onClick={() => navigate('/session/run', { state: { session } })}
+        className="mt-8 rounded bg-ink px-6 py-3 font-semibold text-white"
+      >
         Empezar sesión
       </button>
-      <p className="mt-2 text-sm text-muted">La detección con cámara se activa en la siguiente fase.</p>
+      <p className="mt-2 text-sm text-muted">Necesitarás dar permiso de cámara al navegador.</p>
     </div>
   );
 }
