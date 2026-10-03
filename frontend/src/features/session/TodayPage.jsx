@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { prepareExerciseCue } from '../../services/exerciseCue.js';
 import { useAsync } from '../../hooks/useAsync';
 import IntervalStrip from './IntervalStrip.jsx';
 
@@ -41,7 +42,10 @@ export default function TodayPage() {
       </ul>
 
       <button
-        onClick={() => navigate('/session/run', { state: { session } })}
+        onClick={() => {
+          prepareExerciseCue();
+          navigate('/session/run', { state: { session } });
+        }}
         className="mt-8 rounded bg-ink px-6 py-3 font-semibold text-white"
       >
         Empezar sesión

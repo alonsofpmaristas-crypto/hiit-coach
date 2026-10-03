@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 /** Cuenta atrás en segundos; llama a onDone una vez al llegar a 0. */
-export function useCountdown(seconds, { active, onDone }) {
+export function useCountdown(seconds, { active, onDone, resetKey }) {
   const [remaining, setRemaining] = useState(seconds);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
-  useEffect(() => setRemaining(seconds), [seconds]);
+  useEffect(() => setRemaining(seconds), [seconds, resetKey]);
 
   useEffect(() => {
     if (!active) return;

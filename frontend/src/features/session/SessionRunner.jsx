@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api.js';
+import { playExerciseCue } from '../../services/exerciseCue.js';
 import { useCountdown } from '../../hooks/useCountdown.js';
 import CameraStage from './CameraStage.jsx';
 
@@ -19,8 +20,15 @@ export default function SessionRunner() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [currentReps, setCurrentReps] = useState(0);
+  const announcedBlockRef = useRef(-1);
 
   const block = session?.blocks[blockIndex];
+
+  useEffect(() => {
+    if (!session || announcedBlockRef.current === blockIndex) return;
+    announcedBlockRef.current = blockIndex;
+    playExerciseCue();
+  }, [session, blockIndex]);
 
   const finishBlock = useCallback((slug, reps) => {
     setRepsByExercise((prev) => ({ ...prev, [slug]: Math.max(prev[slug] ?? 0, reps) }));
@@ -50,7 +58,11 @@ export default function SessionRunner() {
   }, [session, block, phase, setIndex, blockIndex, currentReps, finishBlock]);
 
   const duration = phase === 'work' ? block?.workSeconds : block?.restSeconds;
-  const remaining = useCountdown(duration ?? 0, { active: phase === 'work' || phase === 'rest', onDone: advance });
+  const remaining = useCountdown(duration ?? 0, {
+    active: phase === 'work' || phase === 'rest',
+    onDone: advance,
+    resetKey: `${blockIndex}:${setIndex}:${phase}`,
+  });
 
   const finalReps = useMemo(() => {
     if (!block) return repsByExercise;
