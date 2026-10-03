@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { getRange } from '../src/utils/dates.js';
 import { scoreResult } from '../src/services/scoring.js';
 import { mulberry32, shuffle } from '../src/utils/random.js';
+import { computeStreak } from '../src/utils/streak.js';
 
 test('rango semanal empieza en lunes', () => {
   const { from, to } = getRange('weekly', new Date('2026-09-30T10:00:00Z')); // miércoles
@@ -34,4 +35,25 @@ test('la sesión diaria es determinista por semilla', () => {
   const a = shuffle([1, 2, 3, 4, 5, 6, 7, 8], mulberry32(20260928));
   const b = shuffle([1, 2, 3, 4, 5, 6, 7, 8], mulberry32(20260928));
   assert.deepEqual(a, b);
+});
+
+test('la racha cuenta días consecutivos hasta hoy', () => {
+  const today = new Date('2026-09-29T00:00:00Z');
+  const day = (n) => new Date(Date.UTC(2026, 8, n));
+  const streak = computeStreak([day(29), day(28), day(27), day(24)], today);
+  assert.equal(streak, 3);
+});
+
+test('la racha cuenta desde ayer si hoy aún no se ha entrenado', () => {
+  const today = new Date('2026-09-29T00:00:00Z');
+  const day = (n) => new Date(Date.UTC(2026, 8, n));
+  const streak = computeStreak([day(28), day(27)], today);
+  assert.equal(streak, 2);
+});
+
+test('la racha es 0 si se rompió antes de ayer', () => {
+  const today = new Date('2026-09-29T00:00:00Z');
+  const day = (n) => new Date(Date.UTC(2026, 8, n));
+  const streak = computeStreak([day(25)], today);
+  assert.equal(streak, 0);
 });

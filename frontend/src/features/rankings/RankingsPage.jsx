@@ -12,21 +12,43 @@ const TABS = [
 
 export default function RankingsPage() {
   const [type, setType] = useState('daily');
+  const [live, setLive] = useState(false);
+  const [justUpdated, setJustUpdated] = useState(false);
   const userId = useAuthStore((s) => s.user?.id);
   const { data, error, loading, reload } = useAsync(() => api(`/rankings/${type}`), [type]);
 
   // Ranking en vivo: el servidor avisa cuando entra un resultado nuevo.
   useEffect(() => {
     socket.connect();
-    socket.on('ranking:updated', reload);
-    return () => { socket.off('ranking:updated', reload); socket.disconnect(); };
+    const handleConnect = () => setLive(true);
+    const handleDisconnect = () => setLive(false);
+    const handleUpdate = () => {
+      reload();
+      setJustUpdated(true);
+      setTimeout(() => setJustUpdated(false), 1500);
+    };
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('ranking:updated', handleUpdate);
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('ranking:updated', handleUpdate);
+      socket.disconnect();
+    };
   }, [reload]);
 
   const rows = data?.ranking ?? [];
 
   return (
     <div>
-      <h1 className="font-display text-5xl font-bold leading-none">Rankings</h1>
+      <div className="flex items-baseline justify-between">
+        <h1 className="font-display text-5xl font-bold leading-none">Rankings</h1>
+        <span className="flex items-center gap-1.5 text-sm text-muted">
+          <span className={`h-2 w-2 rounded-full ${live ? 'bg-work' : 'bg-rest'}`} />
+          {live ? 'En vivo' : 'Conectando…'}
+        </span>
+      </div>
 
       <div role="tablist" className="mt-6 inline-flex rounded border border-line bg-white p-1">
         {TABS.map((t) => (
@@ -47,7 +69,7 @@ export default function RankingsPage() {
       )}
 
       {rows.length > 0 && (
-        <table className="mt-6 w-full text-left">
+        <table className={`mt-6 w-full text-left transition-colors ${justUpdated ? 'bg-work/5' : ''}`}>
           <thead className="text-sm text-muted">
             <tr>
               <th className="py-2 pr-2 font-medium">Puesto</th>

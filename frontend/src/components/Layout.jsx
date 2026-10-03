@@ -16,6 +16,7 @@ export default function Layout() {
           <nav className="flex items-center gap-5">
             <NavLink to="/" end className={linkClass}>Sesión de hoy</NavLink>
             <NavLink to="/rankings" className={linkClass}>Rankings</NavLink>
+            <NavLink to="/history" className={linkClass}>Progreso</NavLink>
             <NavLink to="/calibrate" className={linkClass}>Calibración</NavLink>
           </nav>
           {user ? (

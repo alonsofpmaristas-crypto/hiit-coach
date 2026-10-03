@@ -30,9 +30,16 @@ export function useCamera() {
   }, []);
 
   useEffect(() => {
-    if (status === 'ready' && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-    }
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    if (status !== 'ready' || !video || !stream) return;
+
+    video.srcObject = stream;
+    video.play().catch(() => {});
+
+    return () => {
+      if (video.srcObject === stream) video.srcObject = null;
+    };
   }, [status]);
 
   return { videoRef, status };

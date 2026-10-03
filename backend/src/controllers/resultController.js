@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma.js';
 import { HttpError, asyncHandler } from '../utils/httpError.js';
 import { startOfUTCDay } from '../utils/dates.js';
 import { scoreResult } from '../services/scoring.js';
+import { getHistorySummary } from '../services/historyService.js';
 
 const submitSchema = z.object({
   dailySessionId: z.number().int().positive(),
@@ -45,4 +46,8 @@ export const myHistory = asyncHandler(async (req, res) => {
     take: 90,
   });
   res.json(results);
+});
+
+export const mySummary = asyncHandler(async (req, res) => {
+  res.json(await getHistorySummary(req.userId));
 });

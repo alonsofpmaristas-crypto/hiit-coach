@@ -6,6 +6,7 @@ import TodayPage from './features/session/TodayPage.jsx';
 import SessionRunner from './features/session/SessionRunner.jsx';
 import RankingsPage from './features/rankings/RankingsPage.jsx';
 import CalibratePage from './features/pose-detection/CalibratePage.jsx';
+import HistoryPage from './features/history/HistoryPage.jsx';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/" element={<ProtectedRoute><TodayPage /></ProtectedRoute>} />
         <Route path="/session/run" element={<ProtectedRoute><SessionRunner /></ProtectedRoute>} />
         <Route path="/rankings" element={<RankingsPage />} />
+        <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
         <Route path="/calibrate" element={<ProtectedRoute><CalibratePage /></ProtectedRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

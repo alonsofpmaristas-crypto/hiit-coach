@@ -20,15 +20,25 @@ export default function SessionRunner() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [currentReps, setCurrentReps] = useState(0);
-  const announcedBlockRef = useRef(-1);
+  const [exerciseCountdown, setExerciseCountdown] = useState(3);
+  const announcedCountdownRef = useRef(null);
 
   const block = session?.blocks[blockIndex];
 
   useEffect(() => {
-    if (!session || announcedBlockRef.current === blockIndex) return;
-    announcedBlockRef.current = blockIndex;
-    playExerciseCue();
-  }, [session, blockIndex]);
+    if (!session || exerciseCountdown === 0) return;
+    const countdownId = `${blockIndex}:${exerciseCountdown}`;
+    if (announcedCountdownRef.current !== countdownId) {
+      announcedCountdownRef.current = countdownId;
+      playExerciseCue();
+    }
+    const id = setTimeout(() => setExerciseCountdown((count) => count - 1), 1000);
+    return () => clearTimeout(id);
+  }, [session, blockIndex, exerciseCountdown]);
+
+  useEffect(() => {
+    if (session && exerciseCountdown === 0) playExerciseCue(true);
+  }, [session, exerciseCountdown]);
 
   const finishBlock = useCallback((slug, reps) => {
     setRepsByExercise((prev) => ({ ...prev, [slug]: Math.max(prev[slug] ?? 0, reps) }));
@@ -51,6 +61,7 @@ export default function SessionRunner() {
       setSetIndex(0);
       setPhase('work');
       setCurrentReps(0);
+      setExerciseCountdown(3);
     } else {
       setPhase('done');
     }
@@ -59,7 +70,7 @@ export default function SessionRunner() {
 
   const duration = phase === 'work' ? block?.workSeconds : block?.restSeconds;
   const remaining = useCountdown(duration ?? 0, {
-    active: phase === 'work' || phase === 'rest',
+    active: (phase === 'work' && exerciseCountdown === 0) || phase === 'rest',
     onDone: advance,
     resetKey: `${blockIndex}:${setIndex}:${phase}`,
   });
@@ -126,12 +137,27 @@ export default function SessionRunner() {
       <p className="text-muted">{phase === 'work' ? 'Trabajo' : 'Descanso'}</p>
 
       <div className="mt-6">
-        <CameraStage exerciseSlug={block.exerciseSlug} active={phase === 'work'} onRepsChange={setCurrentReps} />
+        <CameraStage
+          exerciseSlug={block.exerciseSlug}
+          active={phase === 'work' && exerciseCountdown === 0}
+          onRepsChange={setCurrentReps}
+        />
       </div>
 
-      <button className="mt-6 text-sm text-muted underline" onClick={advance}>
-        {phase === 'work' ? 'Saltar a descanso' : 'Saltar descanso'}
+      <button
+        className="mt-6 text-sm text-muted underline"
+        onClick={() => exerciseCountdown > 0 ? setExerciseCountdown(0) : advance()}
+      >
+        {exerciseCountdown > 0 ? 'Empezar ahora' : phase === 'work' ? 'Saltar a descanso' : 'Saltar descanso'}
       </button>
+
+      {exerciseCountdown > 0 && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white" role="status" aria-live="assertive">
+          <span className="font-display text-[10rem] font-bold leading-none tabular-nums">
+            {exerciseCountdown}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

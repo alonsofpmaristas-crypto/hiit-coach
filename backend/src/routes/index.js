@@ -15,6 +15,7 @@ router.get('/sessions/today', requireAuth, sessions.getToday);
 
 router.post('/results', requireAuth, results.submitResult);
 router.get('/results/me', requireAuth, results.myHistory);
+router.get('/results/me/summary', requireAuth, results.mySummary);
 
 router.get('/rankings/:type', rankings.getRanking);
 
