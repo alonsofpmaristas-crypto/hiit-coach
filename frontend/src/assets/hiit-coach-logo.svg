@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 72" fill="none">
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 9v5m-8-9h16" stroke="#253b51" stroke-width="5"/>
+    <path d="M18 22a25 25 0 1 0 39 1" stroke="#f04f24" stroke-width="7"/>
+    <path d="m16 18 8-1-4 9" fill="#f04f24" stroke="#f04f24" stroke-width="3"/>
+    <circle cx="43" cy="17" r="5" fill="#078bd0" stroke="#078bd0"/>
+    <path d="m39 24-9 9 10 7 9-9m-17 2-12-5m20 11-9 12m9-12 10 11m-18-7-10 9" stroke="#078bd0" stroke-width="6"/>
+    <path d="m63 5-18 23h11L38 58l30-34H56z" fill="#f04f24" stroke="#fff" stroke-width="2"/>
+  </g>
+  <text x="84" y="38" fill="#078bd0" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-size="35" font-style="italic" font-weight="700">HIIT</text>
+  <text x="86" y="61" fill="#253b51" font-family="Barlow, Arial, sans-serif" font-size="19" font-weight="700" letter-spacing="2">COACH</text>
+</svg>
