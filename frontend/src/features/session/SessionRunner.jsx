@@ -8,6 +8,8 @@ import CameraStage from './CameraStage.jsx';
 // Máquina de estados simple de la sesión completa:
 // work -> rest -> work ... hasta acabar las series del bloque, luego el
 // siguiente bloque, hasta terminar todos los ejercicios.
+const EXERCISE_CHANGE_REST_SECONDS = 20;
+
 export default function SessionRunner() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function SessionRunner() {
   const [blockIndex, setBlockIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
   const [phase, setPhase] = useState('work'); // work | rest | done
+  const [restBetweenExercises, setRestBetweenExercises] = useState(false);
   const [repsByExercise, setRepsByExercise] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -48,31 +51,53 @@ export default function SessionRunner() {
     if (!session) return;
     if (block) finishBlock(block.exerciseSlug, currentReps);
 
-    if (phase === 'work' && setIndex + 1 < block.sets) {
-      setSetIndex((i) => i + 1);
-      setPhase('rest');
-      setCurrentReps(0);
+    if (phase === 'work') {
+      if (setIndex + 1 < block.sets) {
+        setSetIndex((i) => i + 1);
+        setPhase('rest');
+        setRestBetweenExercises(false);
+        setCurrentReps(0);
+        return;
+      }
+
+      if (blockIndex + 1 < session.blocks.length) {
+        setPhase('rest');
+        setRestBetweenExercises(true);
+        setCurrentReps(0);
+        return;
+      }
+
+      setPhase('done');
       return;
     }
-    if (phase === 'rest') { setPhase('work'); return; }
-    // Se acaban las series de este bloque: pasar al siguiente ejercicio.
-    if (blockIndex + 1 < session.blocks.length) {
-      setBlockIndex((i) => i + 1);
-      setSetIndex(0);
-      setPhase('work');
-      setCurrentReps(0);
-      setExerciseCountdown(3);
-    } else {
-      setPhase('done');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, block, phase, setIndex, blockIndex, currentReps, finishBlock]);
 
-  const duration = phase === 'work' ? block?.workSeconds : block?.restSeconds;
+    if (phase === 'rest') {
+      if (restBetweenExercises) {
+        setBlockIndex((i) => i + 1);
+        setSetIndex(0);
+        setPhase('work');
+        setRestBetweenExercises(false);
+        setCurrentReps(0);
+        setExerciseCountdown(3);
+        return;
+      }
+
+      setPhase('work');
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, block, phase, setIndex, blockIndex, currentReps, finishBlock, restBetweenExercises]);
+
+  const duration = phase === 'work'
+    ? block?.workSeconds
+    : restBetweenExercises
+      ? EXERCISE_CHANGE_REST_SECONDS
+      : block?.restSeconds;
   const remaining = useCountdown(duration ?? 0, {
     active: (phase === 'work' && exerciseCountdown === 0) || phase === 'rest',
     onDone: advance,
-    resetKey: `${blockIndex}:${setIndex}:${phase}`,
+    resetKey: `${blockIndex}:${setIndex}:${phase}:${restBetweenExercises}`,
   });
 
   const finalReps = useMemo(() => {
@@ -134,7 +159,9 @@ export default function SessionRunner() {
       <p className={`mt-1 font-display text-7xl font-bold ${phase === 'rest' ? 'text-muted' : 'text-work'}`}>
         {remaining}s
       </p>
-      <p className="text-muted">{phase === 'work' ? 'Trabajo' : 'Descanso'}</p>
+      <p className="text-muted">
+        {phase === 'work' ? 'Trabajo' : restBetweenExercises ? 'Descanso entre ejercicios' : 'Descanso'}
+      </p>
 
       <div className="mt-6">
         <CameraStage
