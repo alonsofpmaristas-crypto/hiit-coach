@@ -76,7 +76,8 @@ DATABASE_URL="postgresql://neondb_owner:npg_6Uq5scAgPVwR@ep-shiny-water-b1hmlb24
 ### Backend — Render
 `render.yaml` en la raíz es un blueprint: al conectar el repo en Render
 ("New +" → "Blueprint"), propone el servicio ya configurado (`rootDir:
-backend`, build, start con `prisma migrate deploy` antes de arrancar).
+backend`, build, start con `prisma migrate deploy` y el seed idempotente
+antes de arrancar).
 Faltan por rellenar a mano en el panel:
 - `DATABASE_URL`: la cadena de Neon/Supabase.
 - `CLIENT_URL`: el dominio estable de producción de Vercel.
@@ -97,8 +98,9 @@ las rutas de React Router funcionen al recargar). Variables de entorno:
 - `VITE_API_URL` y `VITE_SOCKET_URL`: la URL que te dé Render.
 
 ### Orden recomendado
-1. Base de datos (Neon/Supabase) → migraciones + seed.
-2. Backend (Render) con `DATABASE_URL` ya disponible.
+1. Base de datos (Neon/Supabase) → configura `DATABASE_URL`.
+2. Backend (Render) con `DATABASE_URL` ya disponible; al arrancar aplica
+   migraciones y siembra los ejercicios automáticamente.
 3. Frontend (Vercel) con la URL del backend ya disponible.
 4. Vuelve a Render y configura `CLIENT_URL` con el dominio estable de
    producción y `VERCEL_PREVIEW_TEAM_SLUG` con el slug del equipo Vercel.

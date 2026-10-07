@@ -9,7 +9,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate
-    startCommand: npx prisma migrate deploy && npm start
+    startCommand: npx prisma migrate deploy && npm run db:seed && npm start
     healthCheckPath: /health
     envVars:
       - key: JWT_SECRET
