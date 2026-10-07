@@ -79,7 +79,11 @@ DATABASE_URL="postgresql://neondb_owner:npg_6Uq5scAgPVwR@ep-shiny-water-b1hmlb24
 backend`, build, start con `prisma migrate deploy` antes de arrancar).
 Faltan por rellenar a mano en el panel:
 - `DATABASE_URL`: la cadena de Neon/Supabase.
-- `CLIENT_URL`: la URL que te dé Vercel en el paso siguiente.
+- `CLIENT_URL`: el dominio estable de producción de Vercel.
+- `VERCEL_PREVIEW_TEAM_SLUG`: el slug del equipo Vercel que aparece en las
+  URLs de preview, por ejemplo `alonso-fpm-aristas`. El backend admite
+  previews cuyo dominio sigue el patrón
+  `hiit-coach-<preview>-<equipo>.vercel.app`, además del dominio de producción.
 
 **Free tier de Render:** el servicio se duerme tras ~15 min sin tráfico; la
 primera petición tras dormir tarda unos segundos (arranque en frío). Normal
@@ -96,8 +100,10 @@ las rutas de React Router funcionen al recargar). Variables de entorno:
 1. Base de datos (Neon/Supabase) → migraciones + seed.
 2. Backend (Render) con `DATABASE_URL` ya disponible.
 3. Frontend (Vercel) con la URL del backend ya disponible.
-4. Vuelve a Render y actualiza `CLIENT_URL` con la URL real de Vercel
-   (si la pusiste antes de conocerla, CORS bloqueará las peticiones).
+4. Vuelve a Render y configura `CLIENT_URL` con el dominio estable de
+   producción y `VERCEL_PREVIEW_TEAM_SLUG` con el slug del equipo Vercel.
+   Las URLs efímeras de preview no deben usarse como `CLIENT_URL`, porque
+   cambiarán con cada despliegue.
 
 ## 5. Qué contar en la memoria sobre esta fase
 - La separación test unitario / integración / E2E, y por qué cada capa

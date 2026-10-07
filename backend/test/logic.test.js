@@ -4,6 +4,7 @@ import { getRange } from '../src/utils/dates.js';
 import { scoreResult } from '../src/services/scoring.js';
 import { mulberry32, shuffle } from '../src/utils/random.js';
 import { computeStreak } from '../src/utils/streak.js';
+import { isAllowedOrigin } from '../src/utils/cors.js';
 
 test('rango semanal empieza en lunes', () => {
   const { from, to } = getRange('weekly', new Date('2026-09-30T10:00:00Z')); // miércoles
@@ -56,4 +57,27 @@ test('la racha es 0 si se rompió antes de ayer', () => {
   const day = (n) => new Date(Date.UTC(2026, 8, n));
   const streak = computeStreak([day(25)], today);
   assert.equal(streak, 0);
+});
+
+test('CORS permite producción y previews del proyecto Vercel configurado', () => {
+  const config = {
+    clientUrl: 'https://hiit-coach-iota.vercel.app',
+    vercelPreviewTeamSlug: 'alonso-fpm-aristas',
+  };
+
+  assert.equal(isAllowedOrigin(config.clientUrl, config), true);
+  assert.equal(
+    isAllowedOrigin('https://hiit-coach-dfp9bvyu1-alonso-fpm-aristas.vercel.app', config),
+    true,
+  );
+  assert.equal(
+    isAllowedOrigin('https://hiit-coach-git-main-alonso-fpm-aristas.vercel.app', config),
+    true,
+  );
+  assert.equal(isAllowedOrigin('https://other-project-alonso-fpm-aristas.vercel.app', config), false);
+  assert.equal(isAllowedOrigin('https://hiit-coach-preview.vercel.app', config), false);
+  assert.equal(
+    isAllowedOrigin('https://hiit-coach-preview-alonso-fpm-aristas.vercel.app.evil.com', config),
+    false,
+  );
 });

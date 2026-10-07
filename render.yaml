@@ -18,5 +18,7 @@ services:
         sync: false # se rellena a mano con la cadena de conexión de Neon/Supabase
       - key: CLIENT_URL
         sync: false # URL pública del frontend en Vercel, p. ej. https://hiit-coach.vercel.app
+      - key: VERCEL_PREVIEW_TEAM_SLUG
+        sync: false # slug del equipo Vercel, parte final de sus URLs de preview
       - key: PORT
         value: 4000
