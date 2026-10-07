@@ -8,9 +8,27 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: hiitcoach
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # Base de datos separada para los tests de integración (test:integration).
+  # Va en un contenedor y un puerto distintos para no arriesgar nunca los
+  # datos de desarrollo: resetDatabase() borra todas las filas antes de
+  # cada test.
+  db-test:
+    image: postgres:16-alpine
+    container_name: hiitcoach-db-test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: hiitcoach_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+
 volumes:
   pgdata:
+  pgdata_test:

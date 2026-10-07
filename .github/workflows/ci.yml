@@ -1,0 +1,113 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    # Postgres real como servicio del job: los tests de integración hablan
+    # con una base de datos de verdad, no con un mock.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: usuario
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: hiitcoach_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://usuario:password@localhost:5432/hiitcoach_test
+      JWT_SECRET: ci_test_secret
+      CLIENT_URL: http://localhost:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx prisma generate
+      - run: npm test
+      - run: npx prisma db push --skip-generate
+      - run: node --test test/integration/*.test.js
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: usuario
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: hiitcoach_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://usuario:password@localhost:5432/hiitcoach_e2e
+      JWT_SECRET: ci_test_secret
+      CLIENT_URL: http://localhost:5173
+      PORT: 4000
+      VITE_API_URL: http://localhost:4000
+      VITE_SOCKET_URL: http://localhost:4000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Preparar backend
+        working-directory: backend
+        run: |
+          npm install
+          npx prisma generate
+          npx prisma db push --skip-generate
+          npm run db:seed
+
+      - name: Preparar frontend
+        working-directory: frontend
+        run: npm install
+
+      - name: Instalar Playwright y navegadores
+        working-directory: e2e
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Ejecutar E2E
+        working-directory: e2e
+        run: npx playwright test
+
+      - name: Subir informe de Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7

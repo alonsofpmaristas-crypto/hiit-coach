@@ -1,0 +1,22 @@
+# Blueprint de Render (Infrastructure as Code): al conectar el repo, Render
+# lee este archivo y propone crear el servicio con esta configuración.
+# El plan "free" se "duerme" tras ~15 min de inactividad; la primera
+# petición tras el sueño tarda unos segundos en arrancar en frío.
+services:
+  - type: web
+    name: hiit-coach-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: postgresql://neondb_owner:npg_6Uq5scAgPVwR@ep-shiny-water-b1hmlb24-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require #false # se rellena a mano con la cadena de conexión de Neon/Supabase
+      - key: CLIENT_URL
+        sync: false # URL pública del frontend en Vercel, p. ej. https://hiit-coach.vercel.app
+      - key: PORT
+        value: 4000
