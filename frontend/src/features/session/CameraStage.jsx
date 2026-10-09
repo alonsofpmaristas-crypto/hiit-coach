@@ -31,7 +31,7 @@ export default function CameraStage({ exerciseSlug, active, onRepsChange }) {
       <div className="absolute inset-0 -scale-x-100">
         <PoseOverlay videoRef={videoRef} keypoints={keypoints} />
       </div>
-      <div className="absolute bottom-3 right-3 rounded bg-black/60 px-3 py-1 text-sm text-white">
+      <div className="absolute bottom-3 right-3 rounded-lg bg-black/60 px-6 py-2 text-[28px] text-white">
         {trackingStatus === 'loading' && 'Cargando el modelo…'}
         {trackingStatus === 'error' && 'No se pudo cargar la detección de pose.'}
         {trackingStatus === 'tracking' && `${reps} repeticiones`}
