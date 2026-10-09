@@ -11,7 +11,16 @@ export default function TodayPage() {
   const { data: session, error, loading } = useAsync(() => api('/sessions/today'));
   const { data: history } = useAsync(() => api('/results/me'));
 
-  if (loading) return <p className="text-muted">Cargando la sesión de hoy…</p>;
+  if (loading) {
+    return (
+      <div>
+        <p className="text-muted">Cargando la sesión de hoy…</p>
+        <p className="mt-4 max-w-prose font-display text-3xl font-bold leading-tight">
+          Realiza un breve calentamiento, antes de comenzar.
+        </p>
+      </div>
+    );
+  }
   if (error) return <p role="alert" className="text-work">{error.message}</p>;
 
   const alreadyDone = history?.some((r) => r.dailySessionId === session.id);

@@ -18,8 +18,7 @@ export default function CalibratePage() {
     <div>
       <h1 className="font-display text-4xl font-bold">Calibración de ejercicios</h1>
       <p className="mt-2 max-w-prose text-muted">
-        Ponte delante de la cámara y comprueba que el valor y el contador reaccionan
-        como se espera antes de ajustar los umbrales en <code>RepCounter.js</code>.
+        Ponte delante de la cámara y comprueba que el contador reacciona como se espera antes de ajustar los umbrales.
       </p>
 
       <select
