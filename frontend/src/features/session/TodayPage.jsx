@@ -15,7 +15,7 @@ export default function TodayPage() {
     return (
       <div>
         <p className="text-muted">Cargando la sesión de hoy…</p>
-        <p className="mt-4 max-w-prose font-display text-3xl font-bold leading-tight">
+        <p className="mt-4 max-w-prose font-display text-2xl font-bold leading-tight sm:text-3xl">
           Realiza un breve calentamiento, antes de comenzar.
         </p>
         <p className="mt-3 max-w-prose text-muted">
@@ -35,7 +35,7 @@ export default function TodayPage() {
   return (
     <div>
       <p className="text-muted capitalize">{date}</p>
-      <h1 className="font-display text-6xl font-bold leading-none">{formatMinutes(totalSeconds)} de HIIT</h1>
+      <h1 className="font-display text-5xl font-bold leading-none sm:text-6xl">{formatMinutes(totalSeconds)} de HIIT</h1>
       <p className="mt-3 max-w-prose text-muted">
         {session.blocks.length} ejercicios, {session.blocks[0].sets} series cada uno. Trabajas {session.blocks[0].workSeconds} s
         y descansas {session.blocks[0].restSeconds} s.
@@ -46,8 +46,8 @@ export default function TodayPage() {
       <ul className="mt-8 divide-y divide-line border-y border-line">
         {session.blocks.map((b) => (
           <li key={b.exerciseSlug} className="py-4">
-            <div className="flex items-baseline justify-between gap-4">
-              <h2 className="font-display text-2xl font-semibold">{b.exercise?.name}</h2>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+              <h2 className="break-words font-display text-2xl font-semibold">{b.exercise?.name}</h2>
               <span className="text-sm text-muted">{b.exercise?.pointsPerRep} pt por repetición</span>
             </div>
             <p className="mt-1 max-w-prose text-muted">{b.exercise?.description}</p>

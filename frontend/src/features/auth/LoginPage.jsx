@@ -34,9 +34,9 @@ export default function LoginPage() {
   const input = 'mt-1 w-full rounded border border-line bg-white px-3 py-2';
 
   return (
-    <div className="mx-auto max-w-sm px-4 py-16">
+    <div className="mx-auto max-w-sm px-4 py-10 sm:py-16">
       <img src={logo} alt="HIIT Coach" className="mx-auto mb-8 h-16 w-auto" />
-      <h1 className="text-center font-display text-5xl font-bold leading-none">
+      <h1 className="text-center font-display text-4xl font-bold leading-none sm:text-5xl">
         {mode === 'login' ? 'Entra y suda' : 'Crea tu cuenta'}
       </h1>
       <p className="mt-3 text-muted">Una sesión de HIIT nueva cada día, contada por tu cámara.</p>

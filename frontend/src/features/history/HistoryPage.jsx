@@ -8,7 +8,7 @@ const dateLabel = (iso) =>
 const StatTile = ({ label, value }) => (
   <div className="border-l-2 border-line pl-3">
     <p className="text-sm text-muted">{label}</p>
-    <p className="font-display text-4xl font-bold">{value}</p>
+    <p className="break-words font-display text-3xl font-bold sm:text-4xl">{value}</p>
   </div>
 );
 
@@ -28,10 +28,10 @@ export default function HistoryPage() {
 
   return (
     <div>
-      <h1 className="font-display text-5xl font-bold leading-none">Tu progreso</h1>
+      <h1 className="font-display text-4xl font-bold leading-none sm:text-5xl">Tu progreso</h1>
 
       {summary && (
-        <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 sm:gap-6">
           <StatTile label="Racha actual" value={`${summary.streak} d`} />
           <StatTile label="Sesiones" value={summary.totalSessions} />
           <StatTile label="Repeticiones" value={summary.totalReps} />
@@ -47,7 +47,7 @@ export default function HistoryPage() {
       {results?.length > 0 && (
         <ul className="mt-8 divide-y divide-line border-y border-line">
           {results.slice(0, 20).map((r) => (
-            <li key={r.id} className="flex items-baseline justify-between py-3">
+            <li key={r.id} className="flex items-baseline justify-between gap-3 py-3">
               <span className="text-muted">{dateLabel(r.dailySession.date)}</span>
               <span className="font-display text-xl">{r.totalScore} pts</span>
             </li>

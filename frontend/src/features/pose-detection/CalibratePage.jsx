@@ -16,14 +16,14 @@ export default function CalibratePage() {
 
   return (
     <div>
-      <h1 className="font-display text-4xl font-bold">Calibración de ejercicios</h1>
+      <h1 className="font-display text-3xl font-bold sm:text-4xl">Calibración de ejercicios</h1>
       <p className="mt-2 max-w-prose text-muted">
         Ponte delante de la cámara y comprueba que el contador reacciona como se espera antes de ajustar los umbrales.
       </p>
 
       <select
         value={slug} onChange={(e) => setSlug(e.target.value)}
-        className="mt-4 rounded border border-line bg-white px-3 py-2"
+        className="mt-4 max-w-full rounded border border-line bg-white px-3 py-2 sm:w-auto"
       >
         {Object.keys(METRICS).map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
@@ -43,7 +43,7 @@ export default function CalibratePage() {
         )}
       </div>
 
-      <dl className="mt-6 grid max-w-sm grid-cols-2 gap-y-2">
+      <dl className="mt-6 grid max-w-sm grid-cols-2 gap-x-3 gap-y-2">
         <dt className="text-muted">Estado</dt><dd>{status}</dd>
         <dt className="text-muted">{METRICS[slug].unit}</dt><dd>{value !== null ? value.toFixed(1) : '—'}</dd>
         <dt className="text-muted">Repeticiones</dt><dd className="font-display text-2xl">{reps}</dd>

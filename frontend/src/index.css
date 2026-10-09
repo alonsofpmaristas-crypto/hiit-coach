@@ -17,6 +17,8 @@
 }
 
 body {
+  min-width: 320px;
+  overflow-x: hidden;
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);

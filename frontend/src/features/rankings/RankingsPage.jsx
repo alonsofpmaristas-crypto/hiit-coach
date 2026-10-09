@@ -42,19 +42,19 @@ export default function RankingsPage() {
 
   return (
     <div>
-      <div className="flex items-baseline justify-between">
-        <h1 className="font-display text-5xl font-bold leading-none">Rankings</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="font-display text-4xl font-bold leading-none sm:text-5xl">Rankings</h1>
         <span className="flex items-center gap-1.5 text-sm text-muted">
           <span className={`h-2 w-2 rounded-full ${live ? 'bg-work' : 'bg-rest'}`} />
           {live ? 'En vivo' : 'Conectando…'}
         </span>
       </div>
 
-      <div role="tablist" className="mt-6 inline-flex rounded border border-line bg-white p-1">
+      <div role="tablist" className="mt-6 flex w-full rounded border border-line bg-white p-1 sm:inline-flex sm:w-auto">
         {TABS.map((t) => (
           <button
             key={t.id} role="tab" aria-selected={type === t.id} onClick={() => setType(t.id)}
-            className={`rounded px-4 py-1.5 text-sm font-medium ${type === t.id ? 'bg-ink text-white' : 'text-muted'}`}
+            className={`min-w-0 flex-1 rounded px-2 py-1.5 text-sm font-medium sm:flex-none sm:px-4 ${type === t.id ? 'bg-ink text-white' : 'text-muted'}`}
           >
             {t.label}
           </button>
@@ -69,7 +69,8 @@ export default function RankingsPage() {
       )}
 
       {rows.length > 0 && (
-        <table className={`mt-6 w-full text-left transition-colors ${justUpdated ? 'bg-work/5' : ''}`}>
+        <div className="mt-6 overflow-x-auto">
+        <table className={`w-full min-w-[26rem] text-left transition-colors ${justUpdated ? 'bg-work/5' : ''}`}>
           <thead className="text-sm text-muted">
             <tr>
               <th className="py-2 pr-2 font-medium">Puesto</th>
@@ -89,6 +90,7 @@ export default function RankingsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

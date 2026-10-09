@@ -138,11 +138,11 @@ export default function SessionRunner() {
   if (phase === 'done') {
     return (
       <div>
-        <h1 className="font-display text-5xl font-bold">Sesión completada</h1>
+        <h1 className="font-display text-4xl font-bold sm:text-5xl">Sesión completada</h1>
         <ul className="mt-6 divide-y divide-line border-y border-line">
           {session.blocks.map((b) => (
-            <li key={b.exerciseSlug} className="flex items-baseline justify-between py-3">
-              <span>{b.exercise?.name ?? b.exerciseSlug}</span>
+            <li key={b.exerciseSlug} className="flex items-baseline justify-between gap-3 py-3">
+              <span className="min-w-0 break-words">{b.exercise?.name ?? b.exerciseSlug}</span>
               <span className="font-display text-2xl">{finalReps[b.exerciseSlug] ?? 0} reps</span>
             </li>
           ))}
@@ -160,11 +160,11 @@ export default function SessionRunner() {
 
   return (
     <div>
-      <div className="flex items-baseline justify-between">
-        <h1 className="font-display text-4xl font-bold">{block.exercise?.name ?? block.exerciseSlug}</h1>
-        <span className="text-muted">Serie {setIndex + 1} de {block.sets}</span>
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+        <h1 className="break-words font-display text-3xl font-bold sm:text-4xl">{block.exercise?.name ?? block.exerciseSlug}</h1>
+        <span className="shrink-0 text-sm text-muted sm:text-base">Serie {setIndex + 1} de {block.sets}</span>
       </div>
-      <p className={`mt-1 font-display text-7xl font-bold ${phase === 'rest' ? 'text-muted' : 'text-work'}`}>
+      <p className={`mt-1 font-display text-6xl font-bold sm:text-7xl ${phase === 'rest' ? 'text-muted' : 'text-work'}`}>
         {remaining}s
       </p>
       <p className="text-muted">
@@ -190,11 +190,11 @@ export default function SessionRunner() {
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white" role="status" aria-live="assertive">
           <div className="flex flex-col items-center gap-6 px-6 text-center">
             {nextExercisePrompt && (
-              <p className="max-w-3xl font-display text-3xl font-bold leading-tight">
+              <p className="max-w-3xl font-display text-2xl font-bold leading-tight sm:text-3xl">
                 {nextExercisePrompt}
               </p>
             )}
-            <span className="font-display text-[10rem] font-bold leading-none tabular-nums">
+            <span className="font-display text-[clamp(5rem,30vw,10rem)] font-bold leading-none tabular-nums">
               {exerciseCountdown}
             </span>
           </div>
