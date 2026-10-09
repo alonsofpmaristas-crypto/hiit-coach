@@ -18,6 +18,9 @@ export default function TodayPage() {
         <p className="mt-4 max-w-prose font-display text-3xl font-bold leading-tight">
           Realiza un breve calentamiento, antes de comenzar.
         </p>
+        <p className="mt-3 max-w-prose text-muted">
+          Mantén una buena hidratación y asegúrate de disponer de una zona espaciosa, ventilada y bien iluminada.
+        </p>
       </div>
     );
   }

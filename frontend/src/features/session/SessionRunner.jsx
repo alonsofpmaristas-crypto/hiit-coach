@@ -24,6 +24,7 @@ export default function SessionRunner() {
   const [submitError, setSubmitError] = useState(null);
   const [currentReps, setCurrentReps] = useState(0);
   const [exerciseCountdown, setExerciseCountdown] = useState(3);
+  const [nextExercisePrompt, setNextExercisePrompt] = useState(null);
   const announcedCountdownRef = useRef(null);
 
   const block = session?.blocks[blockIndex];
@@ -40,7 +41,10 @@ export default function SessionRunner() {
   }, [session, blockIndex, exerciseCountdown]);
 
   useEffect(() => {
-    if (session && exerciseCountdown === 0) playExerciseCue(true);
+    if (session && exerciseCountdown === 0) {
+      playExerciseCue(true);
+      setNextExercisePrompt(null);
+    }
   }, [session, exerciseCountdown]);
 
   const finishBlock = useCallback((slug, reps) => {
@@ -73,12 +77,16 @@ export default function SessionRunner() {
 
     if (phase === 'rest') {
       if (restBetweenExercises) {
+        const nextBlock = session.blocks[blockIndex + 1];
         setBlockIndex((i) => i + 1);
         setSetIndex(0);
         setPhase('work');
         setRestBetweenExercises(false);
         setCurrentReps(0);
         setExerciseCountdown(3);
+        setNextExercisePrompt(
+          `Prepárate para el siguiente ejercicio de "${nextBlock.exercise?.name ?? nextBlock.exerciseSlug}"`,
+        );
         return;
       }
 
@@ -180,9 +188,16 @@ export default function SessionRunner() {
 
       {exerciseCountdown > 0 && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white" role="status" aria-live="assertive">
-          <span className="font-display text-[10rem] font-bold leading-none tabular-nums">
-            {exerciseCountdown}
-          </span>
+          <div className="flex flex-col items-center gap-6 px-6 text-center">
+            {nextExercisePrompt && (
+              <p className="max-w-3xl font-display text-3xl font-bold leading-tight">
+                {nextExercisePrompt}
+              </p>
+            )}
+            <span className="font-display text-[10rem] font-bold leading-none tabular-nums">
+              {exerciseCountdown}
+            </span>
+          </div>
         </div>
       )}
     </div>
