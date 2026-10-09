@@ -32,7 +32,7 @@ export default function CalibratePage() {
       <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
         {cameraStatus !== 'ready' ? (
           <div className="flex aspect-video items-center justify-center rounded bg-ink text-center text-white">
-            <p className="text-muted">Esperando la cámara…</p>
+            <p>Esperando la cámara…</p>
           </div>
         ) : (
           <div className="relative aspect-video overflow-hidden rounded bg-ink">
