@@ -3,6 +3,7 @@ import { useCamera } from '../../hooks/useCamera.js';
 import { usePoseRepCounter } from './usePoseRepCounter.js';
 import PoseOverlay from './PoseOverlay.jsx';
 import { METRICS } from './metrics.js';
+import ExerciseGuide from './ExerciseGuide.jsx';
 
 // Pantalla de calibración: enseña el valor en crudo de la métrica de cada
 // ejercicio en tiempo real, para ajustar los umbrales de RepCounter.js
@@ -28,9 +29,11 @@ export default function CalibratePage() {
         {Object.keys(METRICS).map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
 
-      <div className="mt-6 max-w-lg">
+      <div className="mt-6 grid items-start gap-6 md:grid-cols-2">
         {cameraStatus !== 'ready' ? (
-          <p className="text-muted">Esperando la cámara…</p>
+          <div className="flex aspect-video items-center justify-center rounded bg-ink text-center text-white">
+            <p className="text-muted">Esperando la cámara…</p>
+          </div>
         ) : (
           <div className="relative aspect-video overflow-hidden rounded bg-ink">
             <video ref={videoRef} autoPlay playsInline muted className="h-full w-full -scale-x-100 object-cover" />
@@ -39,6 +42,7 @@ export default function CalibratePage() {
             </div>
           </div>
         )}
+        <ExerciseGuide exerciseSlug={slug} />
       </div>
 
       <dl className="mt-6 grid max-w-sm grid-cols-2 gap-y-2">
