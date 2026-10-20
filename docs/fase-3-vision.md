@@ -26,8 +26,13 @@ la cámara del usuario, sin enviar vídeo a ningún servidor.
    estimación frame a frame haría que el contador oscilara y sumara
    repeticiones falsas al cruzarlo varias veces seguidas. Con dos umbrales
    alejados entre sí, hay que completar de verdad el movimiento en ambos
-   sentidos para que cuente. También hay un tiempo mínimo entre repeticiones
-   para filtrar temblores rápidos.
+   sentidos para que cuente. En ejercicios alternos como las zancadas se usa
+   la rodilla más flexionada, para no perder el movimiento al promediar ambas
+   piernas. Los abdominales miden la elevación normalizada del torso y los
+   escaladores la distancia rodilla-hombro de cada lado, contando por
+   separado las piernas que se alternan. El tiempo mínimo entre repeticiones
+   es corto para admitir ritmos rápidos; la histéresis sigue siendo el filtro
+   principal contra el ruido.
 6. **Overlay del esqueleto** (`pose-detection/PoseOverlay.jsx`): dibuja los
    huesos y puntos sobre un `<canvas>' superpuesto al vídeo, así el usuario
    ve que el sistema le está seguimiento correctamente.

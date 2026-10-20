@@ -5,14 +5,14 @@ import { METRICS } from './metrics.js';
 // La separación entre ambos umbrales (histéresis) evita contar de más por
 // el ruido de la estimación de pose frame a frame.
 const CONFIG = {
-  squat: { downThreshold: 110, upThreshold: 155, minIntervalMs: 400 },
-  lunge: { downThreshold: 110, upThreshold: 155, minIntervalMs: 400 },
-  pushup: { downThreshold: 100, upThreshold: 155, minIntervalMs: 400 },
-  situp: { downThreshold: 90, upThreshold: 140, minIntervalMs: 400 },
-  'jumping-jack': { downThreshold: 0.55, upThreshold: 0.3, minIntervalMs: 300, invert: true },
-  'high-knees': { downThreshold: 0.55, upThreshold: 0.25, minIntervalMs: 250, invert: true },
-  'mountain-climber': { downThreshold: 0.5, upThreshold: 0.25, minIntervalMs: 250, invert: true },
-  burpee: { downThreshold: 0.35, upThreshold: 0.8, minIntervalMs: 600 },
+  squat: { downThreshold: 110, upThreshold: 155, minIntervalMs: 150 },
+  lunge: { downThreshold: 110, upThreshold: 155, minIntervalMs: 150 },
+  pushup: { downThreshold: 100, upThreshold: 155, minIntervalMs: 150 },
+  situp: { downThreshold: 0.45, upThreshold: 0.2, minIntervalMs: 150, invert: true },
+  'jumping-jack': { downThreshold: 0.55, upThreshold: 0.3, minIntervalMs: 150, invert: true },
+  'high-knees': { downThreshold: -0.05, upThreshold: -0.35, minIntervalMs: 120, invert: true },
+  'mountain-climber': { downThreshold: 0.95, upThreshold: 1.25, minIntervalMs: 120 },
+  burpee: { downThreshold: 0.35, upThreshold: 0.8, minIntervalMs: 300 },
 };
 
 /**
@@ -26,6 +26,8 @@ export class RepCounter {
     this.config = CONFIG[exerciseSlug];
     if (!this.metric || !this.config) throw new Error(`Ejercicio sin contador: ${exerciseSlug}`);
     this.phase = 'extended'; // 'extended' | 'contracted'
+    this.cyclePhases = this.metric.cycleFns ? ['extended', 'extended'] : null;
+    this.cycleLastRepAt = this.cyclePhases ? [0, 0] : null;
     this.reps = 0;
     this.lastRepAt = 0;
     this.lastValue = null;
@@ -41,7 +43,24 @@ export class RepCounter {
     const pastDown = invert ? value >= downThreshold : value <= downThreshold;
     const pastUp = invert ? value <= upThreshold : value >= upThreshold;
 
-    if (this.phase === 'extended' && pastDown) {
+    if (this.cyclePhases) {
+      const values = this.metric.cycleFns(keypoints);
+      values.forEach((sideValue, index) => {
+        if (sideValue === null) return;
+        const sidePastDown = invert ? sideValue >= downThreshold : sideValue <= downThreshold;
+        const sidePastUp = invert ? sideValue <= upThreshold : sideValue >= upThreshold;
+        if (this.cyclePhases[index] === 'extended' && sidePastDown) {
+          this.cyclePhases[index] = 'contracted';
+        } else if (this.cyclePhases[index] === 'contracted' && sidePastUp) {
+          this.cyclePhases[index] = 'extended';
+          if (now - this.cycleLastRepAt[index] >= minIntervalMs) {
+            this.reps += 1;
+            this.cycleLastRepAt[index] = now;
+            this.lastRepAt = now;
+          }
+        }
+      });
+    } else if (this.phase === 'extended' && pastDown) {
       this.phase = 'contracted';
     } else if (this.phase === 'contracted' && pastUp) {
       this.phase = 'extended';
@@ -50,11 +69,15 @@ export class RepCounter {
         this.lastRepAt = now;
       }
     }
-    return { reps: this.reps, value, tracking: true, phase: this.phase };
+    return { reps: this.reps, value, tracking: true, phase: this.cyclePhases?.[0] ?? this.phase };
   }
 
   reset() {
     this.phase = 'extended';
+    if (this.cyclePhases) {
+      this.cyclePhases = ['extended', 'extended'];
+      this.cycleLastRepAt = [0, 0];
+    }
     this.reps = 0;
     this.lastRepAt = 0;
   }
