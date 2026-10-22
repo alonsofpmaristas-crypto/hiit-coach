@@ -2,21 +2,25 @@
 
 ## 1. Tests del backend
 
-El backend tiene tests unitarios de lógica pura en
-`backend/test/logic.test.js`. Se ejecutan sin Postgres ni variables de
-entorno:
+Los tests unitarios de lógica pura viven en `backend/test/logic.test.js` y
+se ejecutan sin Postgres. Los tests de integración usan Supertest para
+ejercitar Express, Prisma y Postgres:
 
 ```bash
+docker compose up -d db-test
 cd backend
+cp .env.test.example .env.test
 npm install
 npm test
+npm run test:integration
 ```
 
-Los tests de integración con Supertest y Postgres todavía no están
-implementados. Por eso no hay un script `test:integration` ni una base de
-datos de prueba en `docker-compose.yml`; la CI ejecuta únicamente la suite
-unitaria. La cobertura de los flujos completos está en los tests E2E
-descritos a continuación.
+`test:integration` carga `.env.test` (crea ese archivo a partir de
+`.env.test.example` si hace falta), genera el cliente Prisma, sincroniza el
+esquema, siembra los ejercicios y ejecuta `test/integration/`. Por
+seguridad, rechaza cualquier URL que no use una base cuyo nombre incluya
+`test` en un servidor local. Usa `db-test` en el puerto 5433, separado de la
+base de desarrollo.
 
 ## 2. End-to-end (Playwright)
 
@@ -49,7 +53,8 @@ reconocer tal cual en la memoria del TFM, no disimular.
 ## 3. CI (GitHub Actions)
 
 `.github/workflows/ci.yml` tiene tres jobs:
-- **backend**: corre `npm test` para validar la lógica del backend.
+- **backend**: ejecuta los tests unitarios y los de integración con un
+  Postgres efímero.
 - **frontend**: `npm run build`.
 - **e2e**: levanta su propio Postgres, siembra los ejercicios, instala
   Playwright y navegadores, y corre la suite completa. Si falla, sube el
