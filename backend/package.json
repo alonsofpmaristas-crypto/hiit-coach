@@ -7,12 +7,12 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "build": "prisma generate",
-    "test": "node --test test/unit/*.test.js",
-    "test:integration": "dotenv -e .env.test -- npx prisma db push --skip-generate && dotenv -e .env.test -- node --test test/integration/*.test.js",
-    "test:all": "npm test && npm run test:integration",
+    "test": "node --test",
     "db:seed": "node prisma/seed.js"
   },
-  "prisma": { "seed": "node prisma/seed.js" },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcrypt": "^5.1.1",
@@ -24,8 +24,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "dotenv-cli": "^7.4.2",
-    "prisma": "^5.22.0",
-    "supertest": "^7.0.0"
+    "prisma": "^5.22.0"
   }
 }

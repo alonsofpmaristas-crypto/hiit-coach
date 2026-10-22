@@ -1,29 +1,22 @@
 # Fase 5 — Tests de integración, E2E y despliegue
 
-## 1. Tests de integración (Supertest)
+## 1. Tests del backend
 
-A diferencia de `test/unit` (Fase 1), que prueba funciones puras sin
-dependencias, `test/integration` lanza peticiones HTTP reales contra la
-app de Express con una base de datos Postgres real detrás — comprueba que
-rutas, middlewares, Prisma y validación encajan entre sí.
-
-**Por qué una base de datos separada:** `resetDatabase()` borra todas las
-filas antes de cada test. Si apuntara a la base de desarrollo, cada
-ejecución de tests destruiría tus datos. Por eso:
-- `docker-compose.yml` añade un segundo contenedor, `db-test`, en el puerto 5433.
-- `test/integration/setup.js` **se niega a arrancar** si `DATABASE_URL` no
-  contiene la palabra `test`, como salvaguarda adicional.
+El backend tiene tests unitarios de lógica pura en
+`backend/test/logic.test.js`. Se ejecutan sin Postgres ni variables de
+entorno:
 
 ```bash
-docker compose up -d          # levanta db y db-test
 cd backend
-cp .env.test.example .env.test
 npm install
-npm run test:integration      # aplica el esquema a db-test, siembra y corre los tests
+npm test
 ```
 
-`npm test` (sin `:integration`) sigue ejecutando solo los tests unitarios,
-rápidos y sin dependencias — es el que correrías en cada guardado.
+Los tests de integración con Supertest y Postgres todavía no están
+implementados. Por eso no hay un script `test:integration` ni una base de
+datos de prueba en `docker-compose.yml`; la CI ejecuta únicamente la suite
+unitaria. La cobertura de los flujos completos está en los tests E2E
+descritos a continuación.
 
 ## 2. End-to-end (Playwright)
 
@@ -56,8 +49,7 @@ reconocer tal cual en la memoria del TFM, no disimular.
 ## 3. CI (GitHub Actions)
 
 `.github/workflows/ci.yml` tiene tres jobs:
-- **backend**: levanta un Postgres de servicio, corre `npm test` (unitarios)
-  y luego los de integración.
+- **backend**: corre `npm test` para validar la lógica del backend.
 - **frontend**: `npm run build`.
 - **e2e**: levanta su propio Postgres, siembra los ejercicios, instala
   Playwright y navegadores, y corre la suite completa. Si falla, sube el

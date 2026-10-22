@@ -10,35 +10,13 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    # Postgres real como servicio del job: los tests de integración hablan
-    # con una base de datos de verdad, no con un mock.
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: usuario
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: hiitcoach_test
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    env:
-      DATABASE_URL: postgresql://usuario:password@localhost:5432/hiitcoach_test
-      JWT_SECRET: ci_test_secret
-      CLIENT_URL: http://localhost:5173
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm install
-      - run: npx prisma generate
       - run: npm test
-      - run: npx prisma db push --skip-generate
-      - run: node --test test/integration/*.test.js
 
   frontend:
     runs-on: ubuntu-latest

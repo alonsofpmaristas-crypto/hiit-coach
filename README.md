@@ -64,7 +64,8 @@ El objetivo es fomentar la actividad física mediante gamificación (competició
 
 ### Testing
 - **Jest** + **React Testing Library** — tests unitarios frontend. *(Open source, gratis)*
-- **Jest / Supertest** — tests de la API backend. *(Open source, gratis)*
+- **Node.js Test Runner** — tests unitarios de la lógica del backend.
+  *(Open source, gratis)*
 - **Cypress** o **Playwright** — tests end-to-end. *(Open source, gratis)*
 
 > El modelo de pose estimation corre **en el cliente** (navegador) para no depender de subir vídeo continuo al servidor: esto no solo reduce la latencia y protege la privacidad del usuario, sino que además evita costes de cómputo en la nube (no hace falta GPU ni servicios de inferencia de pago). El backend solo recibe el resumen numérico de la sesión (repeticiones válidas por ejercicio), no el vídeo.
