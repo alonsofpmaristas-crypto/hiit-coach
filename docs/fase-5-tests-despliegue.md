@@ -59,10 +59,10 @@ reconocer tal cual en la memoria del TFM, no disimular.
 
 ### Base de datos — Neon o Supabase
 Crea un proyecto Postgres gratuito y copia la cadena de conexión
-(`postgresql://...`). Ejecuta las migraciones una vez contra ella:
+(`<DATABASE_URL>`). Ejecuta las migraciones una vez contra ella:
 ```bash
-DATABASE_URL="postgresql://neondb_owner:npg_6Uq5scAgPVwR@ep-shiny-water-b1hmlb24-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" npx prisma migrate deploy
-DATABASE_URL="postgresql://neondb_owner:npg_6Uq5scAgPVwR@ep-shiny-water-b1hmlb24-pooler.c-5.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" npm run db:seed
+DATABASE_URL="<DATABASE_URL>" npx prisma migrate deploy
+DATABASE_URL="<DATABASE_URL>" npm run db:seed
 ```
 
 ### Backend — Render
