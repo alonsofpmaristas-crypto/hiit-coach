@@ -66,9 +66,10 @@ test('high-knees counter accepts a normal knee lift and a quick cadence', () => 
   counter.update(kneeLiftPose(false), 1000);
   counter.update(kneeLiftPose(true), 1100);
   counter.update(kneeLiftPose(true, true), 1200);
-  assert.equal(counter.update(kneeLiftPose(false, true), 1300).reps, 0);
-  assert.equal(counter.update(kneeLiftPose(false), 1450).reps, 1);
-  assert.equal(counter.update(kneeLiftPose(false), 1600).reps, 2);
+  counter.update(kneeLiftPose(false, true), 1300);
+  counter.update(kneeLiftPose(false), 1450);
+  assert.equal(counter.update(kneeLiftPose(false), 1600).reps, 1);
+  assert.equal(counter.update(kneeLiftPose(false), 1900).reps, 2);
 });
 
 test('high-knees counter ignores brief knee-lowering noise while a knee stays raised', () => {
@@ -79,13 +80,15 @@ test('high-knees counter ignores brief knee-lowering noise while a knee stays ra
   counter.update(kneeLiftPose(true), 1400);
 
   counter.update(kneeLiftPose(false), 1500);
-  counter.update(kneeLiftPose(true), 1550);
-  counter.update(kneeLiftPose(false), 1700);
-  assert.equal(counter.update(kneeLiftPose(true), 1750).reps, 0);
+  counter.update(kneeLiftPose(false), 1550);
+  counter.update(kneeLiftPose(false), 1600);
+  counter.update(kneeLiftPose(false), 1650);
+  assert.equal(counter.update(kneeLiftPose(true), 1700).reps, 0);
 
   counter.update(kneeLiftPose(false), 1900);
-  assert.equal(counter.update(kneeLiftPose(false), 2050).reps, 1);
-  assert.equal(counter.update(kneeLiftPose(false), 2300).reps, 1);
+  assert.equal(counter.update(kneeLiftPose(false), 2150).reps, 0);
+  assert.equal(counter.update(kneeLiftPose(false), 2200).reps, 1);
+  assert.equal(counter.update(kneeLiftPose(false), 2500).reps, 1);
 });
 
 test('situp uses normalized torso rise and counts a full raise-and-lower cycle', () => {

@@ -13,8 +13,8 @@ const CONFIG = {
   'high-knees': {
     downThreshold: -0.05,
     upThreshold: -0.35,
-    minIntervalMs: 120,
-    extendedHoldMs: 120,
+    minIntervalMs: 300,
+    extendedHoldMs: 300,
     invert: true,
   },
   'mountain-climber': { downThreshold: 0.95, upThreshold: 1.25, minIntervalMs: 120 },
