@@ -10,7 +10,13 @@ const CONFIG = {
   pushup: { downThreshold: 100, upThreshold: 155, minIntervalMs: 150 },
   situp: { downThreshold: 0.45, upThreshold: 0.2, minIntervalMs: 150, invert: true },
   'jumping-jack': { downThreshold: 0.55, upThreshold: 0.3, minIntervalMs: 150, invert: true },
-  'high-knees': { downThreshold: -0.05, upThreshold: -0.35, minIntervalMs: 120, invert: true },
+  'high-knees': {
+    downThreshold: -0.05,
+    upThreshold: -0.35,
+    minIntervalMs: 120,
+    extendedHoldMs: 120,
+    invert: true,
+  },
   'mountain-climber': { downThreshold: 0.95, upThreshold: 1.25, minIntervalMs: 120 },
   burpee: { downThreshold: 0.35, upThreshold: 0.8, minIntervalMs: 300 },
 };
@@ -28,6 +34,7 @@ export class RepCounter {
     this.phase = 'extended'; // 'extended' | 'contracted'
     this.cyclePhases = this.metric.cycleFns ? ['extended', 'extended'] : null;
     this.cycleLastRepAt = this.cyclePhases ? [0, 0] : null;
+    this.cycleExtendedSince = this.cyclePhases ? [null, null] : null;
     this.reps = 0;
     this.lastRepAt = 0;
     this.lastValue = null;
@@ -51,12 +58,21 @@ export class RepCounter {
         const sidePastUp = invert ? sideValue <= upThreshold : sideValue >= upThreshold;
         if (this.cyclePhases[index] === 'extended' && sidePastDown) {
           this.cyclePhases[index] = 'contracted';
-        } else if (this.cyclePhases[index] === 'contracted' && sidePastUp) {
-          this.cyclePhases[index] = 'extended';
-          if (now - this.cycleLastRepAt[index] >= minIntervalMs) {
-            this.reps += 1;
-            this.cycleLastRepAt[index] = now;
-            this.lastRepAt = now;
+          this.cycleExtendedSince[index] = null;
+        } else if (this.cyclePhases[index] === 'contracted') {
+          if (sidePastUp) {
+            this.cycleExtendedSince[index] ??= now;
+            if (now - this.cycleExtendedSince[index] >= (this.config.extendedHoldMs ?? 0)) {
+              this.cyclePhases[index] = 'extended';
+              this.cycleExtendedSince[index] = null;
+              if (now - this.cycleLastRepAt[index] >= minIntervalMs) {
+                this.reps += 1;
+                this.cycleLastRepAt[index] = now;
+                this.lastRepAt = now;
+              }
+            }
+          } else {
+            this.cycleExtendedSince[index] = null;
           }
         }
       });
@@ -77,6 +93,7 @@ export class RepCounter {
     if (this.cyclePhases) {
       this.cyclePhases = ['extended', 'extended'];
       this.cycleLastRepAt = [0, 0];
+      this.cycleExtendedSince = [null, null];
     }
     this.reps = 0;
     this.lastRepAt = 0;
